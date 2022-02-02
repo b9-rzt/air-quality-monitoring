@@ -5,7 +5,7 @@ from subprocess import Popen, PIPE
 token="vdRsH8PPe8nme153ERpC"
 host="localhost"
 port="1883"
-delaytime = sys.argv[1]
+delaytime = int(sys.argv[1])
 
 def console(cmd):
     p = Popen(cmd, shell=True, stdout=PIPE)
