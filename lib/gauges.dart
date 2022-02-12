@@ -14,7 +14,7 @@ class GaugeApp extends StatelessWidget {
     return MaterialApp(
       title: 'Radial Gauge Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
@@ -22,7 +22,7 @@ class GaugeApp extends StatelessWidget {
 /// Represents MyHomePage class
 class MyHomePage extends StatefulWidget {
   /// Creates the instance of MyHomePage
-  MyHomePage({Key? key}) : super(key: key);
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -66,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
             NeedlePointer(value: 40)
           ], annotations: <GaugeAnnotation>[
             GaugeAnnotation(
+                // ignore: avoid_unnecessary_containers
                 widget: Container(
                     child: const Text('90.0',
                         style: TextStyle(
