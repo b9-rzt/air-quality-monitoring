@@ -109,6 +109,8 @@ class Client {
     // Perform subscribe (send subscription command via WebSocket API and listen for responses)
     _subscription.subscribe();
 
+    // ignore: avoid_print
+    print('Subscriped!');
     _subscriped = true;
     return _subscription;
   }

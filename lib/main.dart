@@ -196,7 +196,8 @@ class _MyHomePageState extends State<MyHomePage> {
             //   style: Theme.of(context).textTheme.headline4,
             // ),
             // TextButton(onPressed: startsub, child: const Text("Subscribe")),
-            // TextButton(onPressed: stopsub, child: const Text("Unsubscribe")),
+            TextButton(
+                onPressed: stopsub, child: const Text("Do an unsubscribe")),
           ],
         ),
       ),
