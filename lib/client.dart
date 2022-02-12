@@ -1,5 +1,3 @@
-// import 'package:testapp/thingsboardclient.dart';
-
 import 'package:myapp/wert.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
@@ -9,8 +7,6 @@ class Client {
   var _tbClient;
   // ignore: prefer_typing_uninitialized_variables
   var _device;
-  // // ignore: prefer_typing_uninitialized_variables, prefer_final_fields
-  // var _subscription = 0;
   // ignore: unused_field
   late TelemetrySubscriber _subscription;
   bool _logedin = false;
