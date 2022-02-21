@@ -1,5 +1,7 @@
-import 'package:myapp/wert.dart';
+import 'package:flutter/material.dart';
+import 'package:myapp/value/wert.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
+import 'package:myapp/widget/error_dialog.dart';
 
 class Client {
   static const _thingsBoardApiEndpoint = 'http://192.168.2.117:8080';
@@ -7,42 +9,76 @@ class Client {
   var _tbClient;
   // ignore: prefer_typing_uninitialized_variables
   var _device;
-  // ignore: unused_field
+  late BuildContext _context;
   late TelemetrySubscriber _subscription;
   bool _logedin = false;
-  bool _deviceknown = false;
   bool _subscriped = false;
-  // ignore: prefer_typing_uninitialized_variables, non_constant_identifier_names
-  Wert LastCo2 = Wert(0, 0, 'Co2');
-  // ignore: prefer_typing_uninitialized_variables, non_constant_identifier_names
-  Wert LastTemp = Wert(0, 0, 'Temperature');
-  // ignore: prefer_typing_uninitialized_variables, non_constant_identifier_names
-  Wert LastHum = Wert(0, 0, 'Humidity');
+  var _devices = [[], []];
+  Wert lastCo2 = Wert(0, 0, 'Co2');
+  Wert lastTemp = Wert(0, 0, 'Temperature');
+  Wert lastHum = Wert(0, 0, 'Humidity');
 
-  Future<void> login() async {
-    // Create instance of ThingsBoard API Client
-    _tbClient = ThingsboardClient(_thingsBoardApiEndpoint);
-    // ignore: avoid_print
-    print("Client init.");
-    // Perform login with default Tenant Administrator credentials
-    await _tbClient.login(LoginRequest('test1@thingsboard.org', 'test1234'));
-    // // ignore: avoid_print
-    // print('isAuthenticated=${_tbClient.isAuthenticated()}');
-    // // ignore: avoid_print
-    // print('authUser: ${_tbClient.getAuthUser()}');
-
-    _logedin = true;
+  void setcontext(context) {
+    _context = context;
   }
 
-  Future<void> getdevice() async {
-    // ignore: prefer_conditional_assignment
-    if (!_deviceknown) {
-      _device = await _tbClient
-          .getDeviceService()
-          .getDeviceInfo("909c4110-7857-11ec-9ec5-313c7e792047");
-      // // ignore: avoid_print
-      // print('foundDevice: $device');
-      _deviceknown = true;
+  void resetvalues() {
+    lastCo2.resetvalues();
+    lastTemp.resetvalues();
+    lastHum.resetvalues();
+  }
+
+  bool islogedin() {
+    return _logedin;
+  }
+
+  Future<void> login() async {
+    if (!_logedin) {
+      try {
+        // Create instance of ThingsBoard API Client
+        _tbClient = ThingsboardClient(_thingsBoardApiEndpoint);
+        debugPrint("Client init.");
+        await _tbClient
+            .login(LoginRequest('zimmer1@thingsboard.org', 'zimmer1'));
+
+        if (_tbClient.isAuthenticated()) {
+          _logedin = true;
+        } else {
+          showMyDialog(_context);
+        }
+      } catch (e) {
+        showMyDialog(_context);
+      }
+    }
+  }
+
+  Future<void> getdevice(var deviceId) async {
+    if (!_logedin) {
+      login();
+    }
+    _device = await _tbClient.getDeviceService().getDeviceInfo(deviceId);
+  }
+
+  Future<List?> getDevices() async {
+    if (_logedin) {
+      _devices = [[], []];
+
+      var pageLink = PageLink(10);
+      PageData<DeviceInfo> devices;
+
+      devices = await _tbClient.getDeviceService().getCustomerDeviceInfos(
+          _tbClient!.getAuthUser()!.customerId, pageLink);
+      var dev = devices.data.iterator;
+      while (dev.moveNext()) {
+        var id = dev.current.id!.id;
+        var name = dev.current.name;
+        _devices[0].add(name);
+        _devices[1].add(id);
+      }
+      debugPrint('devices: $_devices');
+      return _devices;
+    } else {
+      return null;
     }
   }
 
@@ -54,12 +90,6 @@ class Client {
   }
 
   Future<TelemetrySubscriber> subscripe() async {
-    if (!_logedin) {
-      await login();
-    }
-    if (!_deviceknown) {
-      await getdevice();
-    }
     // Create entity filter to get device by its name
     var entityFilter = EntityNameFilter(
         entityType: EntityType.DEVICE, entityNameFilter: _device.name);
@@ -109,8 +139,7 @@ class Client {
     // Perform subscribe (send subscription command via WebSocket API and listen for responses)
     _subscription.subscribe();
 
-    // ignore: avoid_print
-    print('Subscriped!');
+    debugPrint('Subscriped!');
     _subscriped = true;
     return _subscription;
   }
@@ -124,64 +153,37 @@ class Client {
             .data!.data.first.latest.values.first.values.iterator;
 
         while (keys.moveNext() && values.moveNext()) {
-          // ignore: avoid_print
-          print('--------------------------');
-          // ignore: avoid_print
-          print(keys.current);
-          // ignore: avoid_print
-          print(values.current.ts);
-          // ignore: avoid_print
-          print(values.current.value);
-          // ignore: avoid_print
-          print('--------------------------');
+          debugPrint(
+              '----First----${keys.current}----${values.current.ts}----${values.current.value}----');
 
           if (keys.current == 'Co2') {
-            // ignore: avoid_print
-            print('----------------Co2----------------');
-            LastCo2.setts(values.current.ts);
-            LastCo2.setvalue(int.parse(values.current.value.toString()));
+            debugPrint('----------------Co2----------------');
+            lastCo2.setts(values.current.ts);
+            lastCo2.setvalue(int.parse(values.current.value.toString()));
           }
         }
       } else {
-        // ignore: avoid_print
-        print("The Data is Empty!");
-        // ignore: avoid_print
-        print("values: ");
+        debugPrint("----Data-Update----");
 
         var it = entityDataUpdate.update!.first.timeseries.values.iterator;
         var keys = entityDataUpdate.update!.first.timeseries.keys.iterator;
+
         while (it.moveNext() && keys.moveNext()) {
-          String? value;
-          int ts = 0;
-          // ignore: avoid_print
-          print("--------------------------");
-          var it2 = it.current.iterator;
-          while (it2.moveNext()) {
-            // ignore: avoid_print
-            print(it2.current.ts);
-            ts = it2.current.ts;
-            // ignore: avoid_print
-            print(it2.current.value);
-            value = it2.current.value;
-          }
-          // ignore: avoid_print
-          print(keys.current);
-          // ignore: avoid_print
-          print("--------------------------");
+          String? value = it.current.first.value;
+          int ts = it.current.first.ts;
+          debugPrint(
+              "----Update----${keys.current}----${ts.toString()}----$value----");
 
           if (keys.current == 'Co2') {
-            // ignore: avoid_print
-            print('----------------Co2----------------');
-            LastCo2.setts(ts);
-            LastCo2.setvalue(int.parse(value.toString()));
+            debugPrint('----------------Co2----------------');
+            lastCo2.setts(ts);
+            lastCo2.setvalue(int.parse(value.toString()));
           }
         }
       }
     } catch (e) {
-      // ignore: avoid_print
-      print("ERROR: Datenverarbeitung");
-      // ignore: avoid_print
-      print(e);
+      debugPrint("ERROR: Datenverarbeitung");
+      debugPrint(e.toString());
     }
   }
 
@@ -190,11 +192,10 @@ class Client {
       try {
         // Finally unsubscribe to release subscription
         _subscription.unsubscribe();
-        // ignore: avoid_print
-        print('Unsubscriped');
+        debugPrint('Unsubscriped');
       } catch (e) {
-        // ignore: avoid_print
-        print('ERROR: Unscription failed!');
+        debugPrint('ERROR: Unscription failed!');
+        debugPrint(e.toString());
       }
     }
   }
