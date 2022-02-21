@@ -161,6 +161,16 @@ class Client {
             lastCo2.setts(values.current.ts);
             lastCo2.setvalue(int.parse(values.current.value.toString()));
           }
+          if (keys.current == 'Temperature') {
+            debugPrint('----------------Temperature----------------');
+            lastTemp.setts(values.current.ts);
+            lastTemp.setvalue(int.parse(values.current.value.toString()));
+          }
+          if (keys.current == 'Humidity') {
+            debugPrint('----------------Humidity----------------');
+            lastHum.setts(values.current.ts);
+            lastHum.setvalue(int.parse(values.current.value.toString()));
+          }
         }
       } else {
         debugPrint("----Data-Update----");
@@ -178,6 +188,16 @@ class Client {
             debugPrint('----------------Co2----------------');
             lastCo2.setts(ts);
             lastCo2.setvalue(int.parse(value.toString()));
+          }
+          if (keys.current == 'Temperature') {
+            debugPrint('----------------Temperature----------------');
+            lastTemp.setts(ts);
+            lastTemp.setvalue(int.parse(value.toString()));
+          }
+          if (keys.current == 'Humidity') {
+            debugPrint('----------------Humidity----------------');
+            lastHum.setts(ts);
+            lastHum.setvalue(int.parse(value.toString()));
           }
         }
       }

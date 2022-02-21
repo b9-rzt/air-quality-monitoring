@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/client.dart';
 import 'package:myapp/value/settvalue.dart';
 import 'package:myapp/value/wert.dart';
+import 'package:myapp/widget/lin_gauge.dart';
 import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -20,6 +21,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final Raumliste _list = Raumliste(['Wählen Sie den Raum aus!']);
 
   var _co2value = 0;
+  var _humvalue = 0;
+  var _tempvalue = 0;
   bool _substart = false;
   Client c = Client();
   List? _devices = [[], []];
@@ -39,14 +42,23 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
           backgroundColor: const Color.fromRGBO(50, 75, 225, 1),
         ),
-        body: Column(
+        body: SingleChildScrollView(
+            child: Column(
           children: [
             dropdown(_v, _list),
             const Align(alignment: Alignment.topCenter),
             getRadialGauge(_co2value),
+            Row(
+              children: [
+                getLinearGauge(_humvalue, "Humidity"),
+                const SizedBox(width: 50),
+                getLinearGauge(_tempvalue, "Temperature"),
+              ],
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
           ],
           crossAxisAlignment: CrossAxisAlignment.center,
-        ));
+        )));
   }
 
   Future<void> start() async {
@@ -74,6 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
       c.dataupdate(entityDataUpdate);
       setState(() {
         _co2value = c.lastCo2.getvalue();
+        _humvalue = c.lastHum.getvalue();
+        _tempvalue = c.lastTemp.getvalue();
       });
     }, onDone: () {
       _substart = false;
