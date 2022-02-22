@@ -135,6 +135,7 @@ class Client {
     // Create subscription with provided subscription command
     var telemetryService = _tbClient.getTelemetryService();
     _subscription = TelemetrySubscriber(telemetryService, [cmd]);
+    debugPrint(_subscription.alarmDataStream.first.toString());
 
     // Perform subscribe (send subscription command via WebSocket API and listen for responses)
     _subscription.subscribe();

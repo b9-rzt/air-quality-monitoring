@@ -7,8 +7,8 @@ Widget getLinearGauge(int value, String title) {
       SfLinearGauge(
         minimum: 0.0,
         maximum: 100.0,
-        orientation: LinearGaugeOrientation.vertical,
-        majorTickStyle: const LinearTickStyle(length: 20),
+        orientation: LinearGaugeOrientation.horizontal,
+        majorTickStyle: const LinearTickStyle(length: 10),
         axisLabelStyle: const TextStyle(fontSize: 12.0, color: Colors.black),
         axisTrackStyle: const LinearAxisTrackStyle(
             color: Colors.grey,

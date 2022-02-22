@@ -48,14 +48,9 @@ class _MyHomePageState extends State<MyHomePage> {
             dropdown(_v, _list),
             const Align(alignment: Alignment.topCenter),
             getRadialGauge(_co2value),
-            Row(
-              children: [
-                getLinearGauge(_humvalue, "Humidity"),
-                const SizedBox(width: 50),
-                getLinearGauge(_tempvalue, "Temperature"),
-              ],
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
+            getLinearGauge(_humvalue, "Humidity: $_humvalue%"),
+            const SizedBox(width: 10),
+            getLinearGauge(_tempvalue, "Temperature: $_tempvalue°C"),
           ],
           crossAxisAlignment: CrossAxisAlignment.center,
         )));
@@ -63,7 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> start() async {
     await c.login();
-    // var _devices = [[], []];
     _devices = await c.getDevices();
     if (_devices != null) {
       setState(() {
