@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/Backend/thingsboard_adapter_client.dart';
+import 'package:myapp/pages/settings.dart';
 
 // ignore: unused_element
-Future<void> showMyDialog(BuildContext context) {
+Future<void> showMyDialog(BuildContext context, ThingsboardAdapterClient _c) {
   return showDialog<void>(
     context: context,
     barrierDismissible: false, // user must tap button!
@@ -19,6 +21,16 @@ Future<void> showMyDialog(BuildContext context) {
           ),
         ),
         actions: <Widget>[
+          TextButton(
+            child: const Text('Einstellungen'),
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (BuildContext context) => Settings(_c)));
+            },
+          ),
           TextButton(
             child: const Text('OK'),
             onPressed: () {

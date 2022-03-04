@@ -1,14 +1,20 @@
+// import 'dart:html';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:myapp/client.dart';
-import 'package:myapp/value/settvalue.dart';
+import 'package:myapp/Backend/thingsboard_adapter_client.dart';
+// import 'package:myapp/pages/settings.dart';
 import 'package:myapp/value/wert.dart';
+// import 'package:myapp/widget/error_dialog.dart';
 import 'package:myapp/widget/lin_gauge.dart';
 import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title, ThingsboardAdapterClient? r})
+      : super(key: key);
 
   final String title;
 
@@ -19,25 +25,31 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final SettStringValue? _v = SettStringValue(null);
   final Raumliste _list = Raumliste(['Wählen Sie den Raum aus!']);
+  final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 
+  late StreamSubscription _substream;
   var _co2value = 0;
   var _humvalue = 0;
   var _tempvalue = 0;
   bool _substart = false;
-  Client c = Client();
   List? _devices = [[], []];
 
   @override
   void initState() {
-    c.setcontext(context);
-    start();
+    _c.setcontext(context);
+    _c.sa.readAll().then(
+          (value) => start(),
+        );
+    // start();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: const NavigationDrawerWidget(),
+        drawer: NavigationDrawerWidget(
+          _c,
+        ),
         appBar: AppBar(
           title: Text(widget.title),
           backgroundColor: const Color.fromRGBO(50, 75, 225, 1),
@@ -57,8 +69,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> start() async {
-    await c.login();
-    _devices = await c.getDevices();
+    await _c.login();
+    _devices = await _c.getDevices();
     if (_devices != null) {
       setState(() {
         _v?.value = 'Wählen Sie den Raum aus!';
@@ -71,29 +83,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> startsub(String devicename) async {
     if (_substart) {
-      await c.unsubscripe();
-      c.resetvalues();
+      await _c.unsubscripe();
+      _substream.cancel();
+      _c.resetvalues();
     }
-    await c.getdevice(_devices![1][_devices![0].indexOf(devicename)]);
-    TelemetrySubscriber? _subscription = await c.subscripe();
-    _subscription.entityDataStream.listen((entityDataUpdate) {
-      c.dataupdate(entityDataUpdate);
-      setState(() {
-        _co2value = c.lastCo2.getvalue();
-        _humvalue = c.lastHum.getvalue();
-        _tempvalue = c.lastTemp.getvalue();
-      });
-    }, onDone: () {
-      _substart = false;
-    });
-
+    await _c.getdevice(_devices![1][_devices![0].indexOf(devicename)]);
+    TelemetrySubscriber? _subscription = await _c.subscripe();
     _substart = true;
+    _substream = _subscription.entityDataStream.listen(
+        (entityDataUpdate) {
+          _c.dataupdate(entityDataUpdate);
+          setState(() {
+            _co2value = _c.lastCo2.getvalue();
+            _humvalue = _c.lastHum.getvalue();
+            _tempvalue = _c.lastTemp.getvalue();
+          });
+        },
+        onError: (error, t) => debugPrint("An error happend!"),
+        onDone: () {
+          debugPrint("Data-Stream ended!");
+          _substart = false;
+        });
+    debugPrint("startsub Function after _substream");
   }
 
-  Future<void> stopsub() async {
-    await c.unsubscripe();
-    await c.logout();
-  }
+  // Future<void> stopsub() async {
+  //   await _c.unsubscripe();
+  //   await _c.logout();
+  // }
 
   Widget dropdown(SettStringValue? dropdownValue, Raumliste texts) {
     if (dropdownValue?.value == null) {
@@ -135,4 +152,10 @@ class _MyHomePageState extends State<MyHomePage> {
       }).toList(),
     );
   }
+}
+
+class SettStringValue {
+  String? value;
+
+  SettStringValue(this.value);
 }

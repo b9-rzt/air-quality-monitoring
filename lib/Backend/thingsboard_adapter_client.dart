@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/Backend/storage_adapter.dart';
 import 'package:myapp/value/wert.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 import 'package:myapp/widget/error_dialog.dart';
+// import 'package:myapp/pages/settings.dart';
 
-class Client {
-  static const _thingsBoardApiEndpoint = 'http://192.168.2.117:8080';
+class ThingsboardAdapterClient {
+  StorageAdapter sa = StorageAdapter();
+  late String _thingsBoardApiEndpoint;
   // ignore: prefer_typing_uninitialized_variables
   var _tbClient;
   // ignore: prefer_typing_uninitialized_variables
@@ -17,6 +20,8 @@ class Client {
   Wert lastCo2 = Wert(0, 0, 'Co2');
   Wert lastTemp = Wert(0, 0, 'Temperature');
   Wert lastHum = Wert(0, 0, 'Humidity');
+
+  ThingsboardAdapterClient();
 
   void setcontext(context) {
     _context = context;
@@ -33,21 +38,25 @@ class Client {
   }
 
   Future<void> login() async {
+    // setApi();
     if (!_logedin) {
       try {
         // Create instance of ThingsBoard API Client
-        _tbClient = ThingsboardClient(_thingsBoardApiEndpoint);
+        _tbClient = ThingsboardClient(
+            'http://${sa.getElementwithkey("IPAddress")}:8080');
         debugPrint("Client init.");
-        await _tbClient
-            .login(LoginRequest('zimmer1@thingsboard.org', 'zimmer1'));
-
+        await _tbClient.login(LoginRequest(sa.getElementwithkey("Username"),
+            sa.getElementwithkey("Password")));
+        debugPrint("Is loged in?");
         if (_tbClient.isAuthenticated()) {
           _logedin = true;
+          debugPrint("Is loged in.");
         } else {
-          showMyDialog(_context);
+          showMyDialog(_context, this);
+          debugPrint("Is not loged in.");
         }
       } catch (e) {
-        showMyDialog(_context);
+        showMyDialog(_context, this);
       }
     }
   }
@@ -135,7 +144,6 @@ class Client {
     // Create subscription with provided subscription command
     var telemetryService = _tbClient.getTelemetryService();
     _subscription = TelemetrySubscriber(telemetryService, [cmd]);
-    debugPrint(_subscription.alarmDataStream.first.toString());
 
     // Perform subscribe (send subscription command via WebSocket API and listen for responses)
     _subscription.subscribe();
@@ -146,12 +154,16 @@ class Client {
   }
 
   void dataupdate(EntityDataUpdate entityDataUpdate) {
+    // debugPrint(entityDataUpdate.toString());
+    // debugPrint("------------------------------------------------");
     try {
       if (entityDataUpdate.data != null) {
+        // debugPrint(entityDataUpdate.data!.data.last.latest.values.last.keys
+        //     .toString());
         var keys =
-            entityDataUpdate.data!.data.first.latest.values.first.keys.iterator;
-        var values = entityDataUpdate
-            .data!.data.first.latest.values.first.values.iterator;
+            entityDataUpdate.data!.data.last.latest.values.last.keys.iterator;
+        var values =
+            entityDataUpdate.data!.data.last.latest.values.last.values.iterator;
 
         while (keys.moveNext() && values.moveNext()) {
           debugPrint(
@@ -160,17 +172,29 @@ class Client {
           if (keys.current == 'Co2') {
             debugPrint('----------------Co2----------------');
             lastCo2.setts(values.current.ts);
-            lastCo2.setvalue(int.parse(values.current.value.toString()));
+            if (values.current.ts == 0) {
+              lastCo2.setvalue(0);
+            } else {
+              lastCo2.setvalue(int.parse(values.current.value.toString()));
+            }
           }
           if (keys.current == 'Temperature') {
             debugPrint('----------------Temperature----------------');
             lastTemp.setts(values.current.ts);
-            lastTemp.setvalue(int.parse(values.current.value.toString()));
+            if (values.current.ts == 0) {
+              lastTemp.setvalue(0);
+            } else {
+              lastTemp.setvalue(int.parse(values.current.value.toString()));
+            }
           }
           if (keys.current == 'Humidity') {
             debugPrint('----------------Humidity----------------');
             lastHum.setts(values.current.ts);
-            lastHum.setvalue(int.parse(values.current.value.toString()));
+            if (values.current.ts == 0) {
+              lastHum.setvalue(0);
+            } else {
+              lastHum.setvalue(int.parse(values.current.value.toString()));
+            }
           }
         }
       } else {
@@ -213,6 +237,7 @@ class Client {
       try {
         // Finally unsubscribe to release subscription
         _subscription.unsubscribe();
+        _subscriped = false;
         debugPrint('Unsubscriped');
       } catch (e) {
         debugPrint('ERROR: Unscription failed!');

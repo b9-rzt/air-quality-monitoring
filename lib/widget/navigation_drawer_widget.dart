@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 import 'package:myapp/pages/settings.dart';
 
+// ignore: must_be_immutable
 class NavigationDrawerWidget extends StatelessWidget {
+  final ThingsboardAdapterClient _c;
   final padding = const EdgeInsets.symmetric(horizontal: 20);
 
-  const NavigationDrawerWidget({Key? key}) : super(key: key);
+  const NavigationDrawerWidget(this._c, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,7 @@ class NavigationDrawerWidget extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (BuildContext context) => const Settings()));
+                      builder: (BuildContext context) => Settings(_c)));
             },
           ),
           const Divider(
