@@ -13,10 +13,10 @@ Future<void> showMyDialog(BuildContext context, ThingsboardAdapterClient _c) {
         title: const Text('Fehler'),
         content: SingleChildScrollView(
           child: ListBody(
-            children: const <Widget>[
+            children: <Widget>[
               Text(
-                  'Es konnte keine Verbindung zu Thingsboard hergestellt werden!'),
-              Text(
+                  'Es konnte keine Verbindung zu Thingsboard hergestellt werden! ${_c.sa.getElementwithkey("IPAddress")}'),
+              const Text(
                   'Überprüfen Sie ob sie sich in dem selben Netzwerk befinden und ob die Einstellungen stimmen.'),
             ],
           ),
