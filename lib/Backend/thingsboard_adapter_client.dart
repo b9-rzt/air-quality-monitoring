@@ -1,43 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/Backend/storage_adapter.dart';
-import 'package:myapp/value/wert.dart';
+import 'package:myapp/value/value_classes.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 import 'package:myapp/widget/error_dialog.dart';
-// import 'package:myapp/pages/settings.dart';
 
 class ThingsboardAdapterClient {
   StorageAdapter sa = StorageAdapter();
-  late String _thingsBoardApiEndpoint;
   // ignore: prefer_typing_uninitialized_variables
   var _tbClient;
+
+  /// Variable for the Thingsboard Client
   // ignore: prefer_typing_uninitialized_variables
   var _device;
+
+  /// Variablelist for all device
   late BuildContext _context;
+
+  /// BuildContext
   late TelemetrySubscriber _subscription;
+
+  /// Variable to controll the Subscription
   bool _logedin = false;
   bool _subscriped = false;
-  var _devices = [[], []];
-  Wert lastCo2 = Wert(0, 0, 'Co2');
-  Wert lastTemp = Wert(0, 0, 'Temperature');
-  Wert lastHum = Wert(0, 0, 'Humidity');
 
+  /// Last Values
+  Value lastCo2 = Value(0, 0, 'Co2');
+  Value lastTemp = Value(0, 0, 'Temperature');
+  Value lastHum = Value(0, 0, 'Humidity');
+
+  /// Constructor
   ThingsboardAdapterClient();
 
   void setcontext(context) {
     _context = context;
   }
 
+  /// reset the values when you change the device
   void resetvalues() {
     lastCo2.resetvalues();
     lastTemp.resetvalues();
     lastHum.resetvalues();
   }
 
+  /// Function to get the information if the client is logedin for other classes
   bool islogedin() {
     return _logedin;
   }
 
+  /// Function to login to the WebSocket
   Future<void> login() async {
+    debugPrint('http://${sa.getElementwithkey("IPAddress")}:8080');
     // setApi();
     if (!_logedin) {
       try {
@@ -61,6 +73,7 @@ class ThingsboardAdapterClient {
     }
   }
 
+  /// Function for getting import info about a device
   Future<void> getdevice(var deviceId) async {
     if (!_logedin) {
       login();
@@ -68,9 +81,10 @@ class ThingsboardAdapterClient {
     _device = await _tbClient.getDeviceService().getDeviceInfo(deviceId);
   }
 
+  /// Function for getting the List of possible devices
   Future<List?> getDevices() async {
     if (_logedin) {
-      _devices = [[], []];
+      var _devices = [[], []];
 
       var pageLink = PageLink(10);
       PageData<DeviceInfo> devices;
@@ -91,6 +105,7 @@ class ThingsboardAdapterClient {
     }
   }
 
+  /// Function for loging out the Client
   Future<void> logout() async {
     if (_logedin && !_subscriped) {
       await _tbClient.logout();
@@ -98,26 +113,28 @@ class ThingsboardAdapterClient {
     }
   }
 
+  /// Function for subscribing the WebSocket
+  /// Source: https://thingsboard.io/docs/reference/dart-client/
   Future<TelemetrySubscriber> subscripe() async {
-    // Create entity filter to get device by its name
+    /// Create entity filter to get device by its name
     var entityFilter = EntityNameFilter(
         entityType: EntityType.DEVICE, entityNameFilter: _device.name);
 
-    // Prepare list of queried device fields
+    /// Prepare list of queried device fields
     var deviceFields = <EntityKey>[
       EntityKey(type: EntityKeyType.ENTITY_FIELD, key: 'name'),
       EntityKey(type: EntityKeyType.ENTITY_FIELD, key: 'type'),
       EntityKey(type: EntityKeyType.ENTITY_FIELD, key: 'createdTime')
     ];
 
-    // Prepare list of queried device timeseries
+    /// Prepare list of queried device timeseries
     var deviceTelemetry = <EntityKey>[
       EntityKey(type: EntityKeyType.TIME_SERIES, key: 'Temperature'),
       EntityKey(type: EntityKeyType.TIME_SERIES, key: 'Humidity'),
       EntityKey(type: EntityKeyType.TIME_SERIES, key: 'Co2')
     ];
 
-    // Create entity query with provided entity filter, queried fields and page link
+    /// Create entity query with provided entity filter, queried fields and page link
     var devicesQuery = EntityDataQuery(
         entityFilter: entityFilter,
         entityFields: deviceFields,
@@ -129,7 +146,7 @@ class ThingsboardAdapterClient {
                     type: EntityKeyType.ENTITY_FIELD, key: 'createdTime'),
                 direction: EntityDataSortOrderDirection.DESC)));
 
-    // Create timeseries subscription command to get data for 'temperature' and 'humidity' keys for last hour with realtime updates
+    /// Create timeseries subscription command to get data for 'temperature' and 'humidity' keys for last hour with realtime updates
     var currentTime = DateTime.now().millisecondsSinceEpoch;
     var timeWindow = const Duration(hours: 1).inMilliseconds;
 
@@ -138,14 +155,14 @@ class ThingsboardAdapterClient {
         startTs: currentTime - timeWindow,
         timeWindow: timeWindow);
 
-    // Create subscription command with entities query and timeseries subscription
+    /// Create subscription command with entities query and timeseries subscription
     var cmd = EntityDataCmd(query: devicesQuery, tsCmd: tsCmd);
 
-    // Create subscription with provided subscription command
+    /// Create subscription with provided subscription command
     var telemetryService = _tbClient.getTelemetryService();
     _subscription = TelemetrySubscriber(telemetryService, [cmd]);
 
-    // Perform subscribe (send subscription command via WebSocket API and listen for responses)
+    /// Perform subscribe (send subscription command via WebSocket API and listen for responses)
     _subscription.subscribe();
 
     debugPrint('Subscriped!');
@@ -153,6 +170,7 @@ class ThingsboardAdapterClient {
     return _subscription;
   }
 
+  /// Function for Dataprocessing
   void dataupdate(EntityDataUpdate entityDataUpdate) {
     // debugPrint(entityDataUpdate.toString());
     // debugPrint("------------------------------------------------");
@@ -161,9 +179,9 @@ class ThingsboardAdapterClient {
         // debugPrint(entityDataUpdate.data!.data.last.latest.values.last.keys
         //     .toString());
         var keys =
-            entityDataUpdate.data!.data.last.latest.values.last.keys.iterator;
-        var values =
-            entityDataUpdate.data!.data.last.latest.values.last.values.iterator;
+            entityDataUpdate.data!.data.first.latest.values.first.keys.iterator;
+        var values = entityDataUpdate
+            .data!.data.first.latest.values.first.values.iterator;
 
         while (keys.moveNext() && values.moveNext()) {
           debugPrint(
@@ -232,10 +250,11 @@ class ThingsboardAdapterClient {
     }
   }
 
+  /// Function for unsubscribe the WebSocket
   Future<void> unsubscripe() async {
     if (_subscriped) {
       try {
-        // Finally unsubscribe to release subscription
+        /// Finally unsubscribe to release subscription
         _subscription.unsubscribe();
         _subscriped = false;
         debugPrint('Unsubscriped');

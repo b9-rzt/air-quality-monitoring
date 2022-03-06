@@ -1,33 +1,13 @@
-// import 'dart:html';
-
 import 'package:flutter/material.dart';
-// import 'package:myapp/Backend/storage_adapter.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 import 'package:myapp/value/settvalue.dart';
 import 'package:regexed_validator/regexed_validator.dart';
 
-// class MySett extends StatelessWidget {
-//   MySett({Key? key}) : super(key: key);
-//   StorageAdapter sa = StorageAdapter();
-//   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter Demo',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: Settings(_c),
-//     );
-//   }
-// }
-
+/// Settings Page
 class Settings extends StatefulWidget {
   final ThingsboardAdapterClient _c;
   const Settings(this._c, {Key? key}) : super(key: key);
 
-  // @override
-  // SettingsState createState() => SettingsState();
   @override
   // ignore: no_logic_in_create_state
   State<StatefulWidget> createState() => _SettingsState(_c);
@@ -37,30 +17,29 @@ class _SettingsState extends State<Settings> {
   final ThingsboardAdapterClient _c;
   _SettingsState(this._c);
 
-  // // ignore: non_constant_identifier_names
-  // final SettValue _selected_notification_value = SettValue(2);
+  /// list with settings
   List<Setting> sett = [];
+
+  /// definition of the most used icons
   Icon check = const Icon(Icons.check, color: Colors.blue);
   Icon close = const Icon(Icons.close, color: Colors.red);
 
   @override
   void initState() {
     addSettings();
-
-    // debugPrint(c.test);
     super.initState();
   }
 
+  /// initiate the settings
   void addSettings() {
-    // IP Address
-    sett.add(
-        Setting(const Icon(Icons.circle_outlined), "IP-Adresse von Thingsboard",
-            (String v) {
+    /// setting ip address
+    sett.add(Setting("IPAddress", const Icon(Icons.circle_outlined),
+        "IP-Adresse von Thingsboard", (String v) {
       if (validator.ip(v)) {
         setState(() {
           sett[0].icon = check;
-          // sett[0].changed = true;
-          sett[0].saveSetting();
+          sett[0].valuetext = v;
+          sett[0].saveSetting(_c);
           sett[0].helpertext = "";
         });
       } else {
@@ -71,12 +50,16 @@ class _SettingsState extends State<Settings> {
       }
     }, "", _c.sa.getElementwithkey("IPAddress"), 16));
 
-    sett.add(Setting(check, "Username:", (String v) {
-      sett[1].saveSetting();
+    /// setting username
+    sett.add(Setting("Username", check, "Username:", (String v) {
+      sett[0].valuetext = v;
+      sett[1].saveSetting(_c);
     }, "", _c.sa.getElementwithkey("Username"), 40));
 
-    sett.add(Setting.password(check, "Password:", (String v) {
-      sett[2].saveSetting();
+    /// setting password
+    sett.add(Setting.password("Password", check, "Password:", (String v) {
+      sett[0].valuetext = v;
+      sett[2].saveSetting(_c);
     }, "", _c.sa.getElementwithkey("Password"), 40));
   }
 
@@ -92,14 +75,17 @@ class _SettingsState extends State<Settings> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               const SizedBox(height: 10),
+
+              /// list the settings on the page
               for (int count
                   in List.generate(sett.length, (index) => index + 1))
-                TextformfieldSettings(context, sett[count - 1]),
+                textformfieldSettings(context, sett[count - 1]),
             ],
           ),
         ));
   }
 
+  /// label widget
   Widget label(String text) {
     return Text(
       text,
@@ -108,6 +94,7 @@ class _SettingsState extends State<Settings> {
     );
   }
 
+  /// divider widget
   Widget div() {
     return const Divider(
       color: Colors.black,
@@ -115,31 +102,32 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  Widget radioText(
-      BuildContext context, String text, SettValue groupvalue, int value1) {
-    return ListTile(
-      title: Text(
-        text,
-        style: Theme.of(context)
-            .textTheme
-            .subtitle1!
-            .copyWith(color: Colors.black),
-      ),
-      trailing: Radio(
-        value: value1,
-        groupValue: groupvalue.value,
-        activeColor: const Color.fromARGB(255, 4, 0, 238),
-        onChanged: (int? value) {
-          setState(() {
-            groupvalue.value = value;
-          });
-        },
-      ),
-    );
-  }
+  /// radio button widget for the future
+  // Widget radioText(
+  //     BuildContext context, String text, SettValue groupvalue, int value1) {
+  //   return ListTile(
+  //     title: Text(
+  //       text,
+  //       style: Theme.of(context)
+  //           .textTheme
+  //           .subtitle1!
+  //           .copyWith(color: Colors.black),
+  //     ),
+  //     trailing: Radio(
+  //       value: value1,
+  //       groupValue: groupvalue.value,
+  //       activeColor: const Color.fromARGB(255, 4, 0, 238),
+  //       onChanged: (int? value) {
+  //         setState(() {
+  //           groupvalue.value = value;
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  // ignore: non_constant_identifier_names
-  Widget TextformfieldSettings(BuildContext context, Setting set) {
+  /// textfield for editing the settings
+  Widget textformfieldSettings(BuildContext context, Setting set) {
     return ListTile(
         title: TextFormField(
             obscureText: set.obscure,
@@ -150,6 +138,7 @@ class _SettingsState extends State<Settings> {
             decoration: inputdeco(set)));
   }
 
+  /// decoration of the textfields
   InputDecoration inputdeco(Setting set) {
     return InputDecoration(
       labelText: set.settingstext,
@@ -161,16 +150,4 @@ class _SettingsState extends State<Settings> {
       helperStyle: const TextStyle(color: Color.fromARGB(255, 255, 0, 0)),
     );
   }
-
-  // Widget TextfieldSettings(BuildContext context, Setting set) {
-  //   return ListTile(
-  //       title: TextField(
-  //           cursorColor: const Color.fromARGB(255, 0, 4, 255),
-  //           obscureText: set.obscure,
-  //           // initialValue: set.valuetext,
-  //           controller: set.valuetext,
-  //           maxLength: set.maxlength,
-  //           onChanged: set.changefunction,
-  //           decoration: InputDeco(set)));
-  // }
 }

@@ -1,17 +1,13 @@
-// import 'dart:html';
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
-// import 'package:myapp/pages/settings.dart';
-import 'package:myapp/value/wert.dart';
-// import 'package:myapp/widget/error_dialog.dart';
+import 'package:myapp/value/value_classes.dart';
 import 'package:myapp/widget/lin_gauge.dart';
 import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
+/// Main Page
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title, ThingsboardAdapterClient? r})
       : super(key: key);
@@ -24,26 +20,36 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final SettStringValue? _v = SettStringValue(null);
-  final Raumliste _list = Raumliste(['Wählen Sie den Raum aus!']);
   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 
+  /// List for the selectable rooms/ devices
+  final Roomlist _list = Roomlist(['Wählen Sie den Raum aus!']);
+
+  /// Subscription
   late StreamSubscription _substream;
+
+  /// displayed values
   var _co2value = 0;
   var _humvalue = 0;
   var _tempvalue = 0;
+
+  /// is the subscribtion started
   bool _substart = false;
+
+  /// List of possible devices
   List? _devices = [[], []];
 
+  /// init function to read all elements from storage before initialisate
   @override
   void initState() {
     _c.setcontext(context);
     _c.sa.readAll().then(
           (value) => start(),
         );
-    // start();
     super.initState();
   }
 
+  /// widgets on the main page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,6 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         )));
   }
 
+  /// login to the websocket
   Future<void> start() async {
     await _c.login();
     _devices = await _c.getDevices();
@@ -81,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  /// start subscribtion of the sensor values
   Future<void> startsub(String devicename) async {
     if (_substart) {
       await _c.unsubscripe();
@@ -107,12 +115,8 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint("startsub Function after _substream");
   }
 
-  // Future<void> stopsub() async {
-  //   await _c.unsubscripe();
-  //   await _c.logout();
-  // }
-
-  Widget dropdown(SettStringValue? dropdownValue, Raumliste texts) {
+  /// widget to can select the rooms in a dropdownmenu
+  Widget dropdown(SettStringValue? dropdownValue, Roomlist texts) {
     if (dropdownValue?.value == null) {
       return TextButton(
           onPressed: () {

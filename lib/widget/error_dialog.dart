@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 import 'package:myapp/pages/settings.dart';
 
+/// error dialog
 // ignore: unused_element
 Future<void> showMyDialog(BuildContext context, ThingsboardAdapterClient _c) {
   return showDialog<void>(

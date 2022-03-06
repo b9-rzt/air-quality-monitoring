@@ -1,9 +1,10 @@
-class Wert {
+/// Class for the Last Sensorvalues
+class Value {
   late int _ts;
   late int _value;
   late String _key;
 
-  Wert(this._ts, this._value, this._key);
+  Value(this._ts, this._value, this._key);
 
   void resetvalues() {
     _ts = 0;
@@ -35,17 +36,8 @@ class Wert {
   }
 }
 
-// class StringList {
-//   var devices = [[], []];
-
-//   StringList(this.devices);
-
-//   List getdevices() {
-//     return devices;
-//   }
-// }
-
-class Raumliste {
+/// ElementList for the Rooms/ Sensors
+class Roomlist {
   List<String> raum = [];
-  Raumliste(this.raum);
+  Roomlist(this.raum);
 }

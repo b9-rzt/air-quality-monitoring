@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 
+/// Class to Controll the Flutter Storage
 class StorageAdapter {
+  /// Definition of the Storage and the AccountNameController
   final _storage = const FlutterSecureStorage();
   final _accountNameController =
       TextEditingController(text: 'flutter_secure_storage_service');
 
+  /// Lists of Elements
   List<_SecItem> _items = [];
   final List<_SecItem> _defaultsettings = [];
 
+  /// read all Elements in the Storage and load them in the List _items
   Future<bool> readAll() async {
     debugPrint("StorageAdapter init!");
     _items = [];
@@ -27,13 +30,7 @@ class StorageAdapter {
     return true;
   }
 
-  // void printall() {
-  //   for (int i = 0; i < _items.length; i++) {
-  //     debugPrint("Key: ${_items[i].key}");
-  //     debugPrint("Key: ${_items[i].value}");
-  //   }
-  // }
-
+  /// Search in the _SecItem List _items after the key and return the value
   String getElementwithkey(String key) {
     for (var i = 0; i < _items.length; i++) {
       if (_items[i].key == key) {
@@ -43,8 +40,21 @@ class StorageAdapter {
     return "";
   }
 
+  /// Update Element in the Flutter Storage and in the private Variablelist _items
+  void updateElementwithKey(String key, String value) {
+    for (var i = 0; i < _items.length; i++) {
+      if (_items[i].key == key) {
+        var newitem = _SecItem(key, value);
+        _items[i] = _SecItem(key, value);
+        writeToSecureStorage(newitem);
+        break;
+      }
+    }
+  }
+
+  /// set the default Settings
   void _initDefaultSettings() {
-    _defaultsettings.add(_SecItem("IPAddress", "192.168.2.117"));
+    _defaultsettings.add(_SecItem("IPAddress", "127.0.0.1")); //192.168.2.117
     _defaultsettings.add(_SecItem("Username", "zimmer1@thingsboard.org"));
     _defaultsettings.add(_SecItem("Password", "zimmer1"));
   }
@@ -60,6 +70,7 @@ class StorageAdapter {
   String? _getAccountName() =>
       _accountNameController.text.isEmpty ? null : _accountNameController.text;
 
+  /// Write Element to the Storage
   Future<void> writeToSecureStorage(_SecItem secitem) async {
     await _storage.write(
         key: secitem.key,
@@ -68,6 +79,7 @@ class StorageAdapter {
         aOptions: _getAndroidOptions());
   }
 
+  /// read Element with key from Flutter Storage
   Future<_SecItem?> readFromSecureStorage(String key) async {
     String? secret = await _storage.read(
         key: key, iOptions: _getIOSOptions(), aOptions: _getAndroidOptions());
@@ -79,26 +91,9 @@ class StorageAdapter {
       return _SecItem(key, secret.toString());
     }
   }
-
-  //  void _addNewItem(String key, String value) async {
-
-  //   await _storage.write(
-  //       key: key,
-  //       value: value,
-  //       iOptions: _getIOSOptions(),
-  //       aOptions: _getAndroidOptions());
-  //   _readAll();
-  // }
-
-  // IOSOptions _getIOSOptions() => IOSOptions(
-  //       accountName: _getAccountName(),
-  //     );
-
-  // AndroidOptions _getAndroidOptions() => const AndroidOptions(
-  //       encryptedSharedPreferences: true,
-  //     );
 }
 
+/// Element for better usage
 class _SecItem {
   _SecItem(this.key, this.value);
 

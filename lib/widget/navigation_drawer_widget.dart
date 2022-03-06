@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 import 'package:myapp/pages/settings.dart';
 
-// ignore: must_be_immutable
+/// Navigation drawer widget
 class NavigationDrawerWidget extends StatelessWidget {
   final ThingsboardAdapterClient _c;
   final padding = const EdgeInsets.symmetric(horizontal: 20);
