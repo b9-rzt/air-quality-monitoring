@@ -21,6 +21,8 @@ def console(cmd):
     out, err = p.communicate()
     return out.decode('ascii').strip()
 
+time.sleep(1200) # Sensor benötigt ca.20min um zu starten und werte ausgeben zu können
+
 i2c = board.I2C()  # uses board.SCL and board.SDA
 ccs811 = adafruit_ccs811.CCS811(i2c)
 
