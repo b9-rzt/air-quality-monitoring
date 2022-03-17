@@ -54,9 +54,9 @@ class StorageAdapter {
 
   /// set the default Settings
   void _initDefaultSettings() {
-    _defaultsettings.add(_SecItem("IPAddress", "127.0.0.1")); //192.168.2.117
-    _defaultsettings.add(_SecItem("Username", "zimmer1@thingsboard.org"));
-    _defaultsettings.add(_SecItem("Password", "zimmer1"));
+    _defaultsettings.add(_SecItem("IPAddress", "<thingsboard ip>"));
+    _defaultsettings.add(_SecItem("Username", "<username>"));
+    _defaultsettings.add(_SecItem("Password", "<password>"));
   }
 
   IOSOptions _getIOSOptions() => IOSOptions(

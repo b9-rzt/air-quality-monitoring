@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 import 'package:myapp/value/settvalue.dart';
-import 'package:regexed_validator/regexed_validator.dart';
+// import 'package:regexed_validator/regexed_validator.dart';
 
 /// Settings Page
 class Settings extends StatefulWidget {
@@ -35,19 +35,25 @@ class _SettingsState extends State<Settings> {
     /// setting ip address
     sett.add(Setting("IPAddress", const Icon(Icons.circle_outlined),
         "IP-Adresse von Thingsboard", (String v) {
-      if (validator.ip(v)) {
-        setState(() {
-          sett[0].icon = check;
-          sett[0].valuetext = v;
-          sett[0].saveSetting(_c);
-          sett[0].helpertext = "";
-        });
-      } else {
-        setState(() {
-          sett[0].icon = close;
-          sett[0].helpertext = "Ivalid IP Address!";
-        });
-      }
+      setState(() {
+        sett[0].icon = check;
+        sett[0].valuetext = v;
+        sett[0].saveSetting(_c);
+        // sett[0].helpertext = "";
+      });
+      // if (validator.ip(v)) {
+      //   setState(() {
+      //     sett[0].icon = check;
+      //     sett[0].valuetext = v;
+      //     sett[0].saveSetting(_c);
+      //     sett[0].helpertext = "";
+      //   });
+      // } else {
+      //   setState(() {
+      //     sett[0].icon = close;
+      //     sett[0].helpertext = "Ivalid IP Address!";
+      //   });
+      // }
     }, "", _c.sa.getElementwithkey("IPAddress"), 16));
 
     /// setting username
