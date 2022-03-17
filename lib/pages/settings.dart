@@ -52,14 +52,18 @@ class _SettingsState extends State<Settings> {
 
     /// setting username
     sett.add(Setting("Username", check, "Username:", (String v) {
-      sett[0].valuetext = v;
-      sett[1].saveSetting(_c);
+      setState(() {
+        sett[1].valuetext = v;
+        sett[1].saveSetting(_c);
+      });
     }, "", _c.sa.getElementwithkey("Username"), 40));
 
     /// setting password
     sett.add(Setting.password("Password", check, "Password:", (String v) {
-      sett[0].valuetext = v;
-      sett[2].saveSetting(_c);
+      setState(() {
+        sett[2].valuetext = v;
+        sett[2].saveSetting(_c);
+      });
     }, "", _c.sa.getElementwithkey("Password"), 40));
   }
 

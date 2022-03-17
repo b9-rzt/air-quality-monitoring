@@ -176,12 +176,24 @@ class ThingsboardAdapterClient {
     // debugPrint("------------------------------------------------");
     try {
       if (entityDataUpdate.data != null) {
-        // debugPrint(entityDataUpdate.data!.data.last.latest.values.last.keys
-        //     .toString());
+        // debugPrint(
+        //     "first: ${entityDataUpdate.data!.data.first.latest.values.first.toString().contains("Temperature", 0)}");
+        // debugPrint(
+        //     "last: ${entityDataUpdate.data!.data.last.latest.values.last.toString().contains("Temperature", 0)}");
+
         var keys =
             entityDataUpdate.data!.data.first.latest.values.first.keys.iterator;
         var values = entityDataUpdate
             .data!.data.first.latest.values.first.values.iterator;
+
+        if (entityDataUpdate.data!.data.last.latest.values.last
+            .toString()
+            .contains("Temperature", 0)) {
+          keys =
+              entityDataUpdate.data!.data.last.latest.values.last.keys.iterator;
+          values = entityDataUpdate
+              .data!.data.last.latest.values.last.values.iterator;
+        }
 
         while (keys.moveNext() && values.moveNext()) {
           debugPrint(
