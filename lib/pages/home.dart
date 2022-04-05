@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onPressed: () {
             start();
           },
-          child: const Text('Reload'));
+          child: const Icon(Icons.replay_outlined));
     }
     return DropdownButton<String>(
       value: dropdownValue?.value,
