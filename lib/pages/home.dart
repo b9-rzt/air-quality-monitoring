@@ -7,7 +7,6 @@ import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
-/// Main Page
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title, ThingsboardAdapterClient? r})
       : super(key: key);
@@ -15,10 +14,14 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+/// Main Home Page
+///
+/// the page shows the gauges with the sensor values
+/// shows also the rooms in a dropdownmenu
+class MyHomePageState extends State<MyHomePage> {
   final SettStringValue? _v = SettStringValue(null);
   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 

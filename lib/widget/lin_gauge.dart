@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+/// widget linear gauge
+///
+/// returns a linear gauge as a widget
 Widget getLinearGauge(int value, String title) {
   return Container(
     child: Column(children: [

@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:myapp/Backend/thingsboard_adapter_client.dart';
 
-/// Settings Page
 class Settings extends StatefulWidget {
   final ThingsboardAdapterClient _c;
   const Settings(this._c, {Key? key}) : super(key: key);
 
   @override
   // ignore: no_logic_in_create_state
-  State<StatefulWidget> createState() => _SettingsState(_c);
+  State<StatefulWidget> createState() => SettingsState(_c);
 }
 
-class _SettingsState extends State<Settings> {
+/// Settings Page
+///
+/// a page with textformfields for the ip of thingsboard,
+/// the username and the password
+class SettingsState extends State<Settings> {
   final ThingsboardAdapterClient _c;
-  _SettingsState(this._c);
+  SettingsState(this._c);
   bool _hidePassword = true;
 
   @override
@@ -29,6 +32,7 @@ class _SettingsState extends State<Settings> {
             children: <Widget>[
               const SizedBox(height: 10),
 
+              // ip field
               Form(
                 child: TextFormField(
                   onChanged: (value) {
@@ -60,6 +64,7 @@ class _SettingsState extends State<Settings> {
                 height: 20,
               ),
 
+              // usernamefield
               Form(
                 child: TextFormField(
                   onChanged: (value) {

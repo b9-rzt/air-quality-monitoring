@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
+/// widget radial gauge
+///
+/// returns a radial gauge as a widget
 Widget getRadialGauge(var co2Value) {
   return SfRadialGauge(
       enableLoadingAnimation: true,

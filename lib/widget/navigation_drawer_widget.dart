@@ -39,6 +39,7 @@ class NavigationDrawerWidget extends StatelessWidget {
     ));
   }
 
+  /// build one item in the navigation drawer
   Widget buildMenuItem({
     required String text,
     required IconData icon,
