@@ -14,18 +14,18 @@ Widget getRadialGauge(var co2Value) {
         RadialAxis(minimum: 0, maximum: 3000, ranges: <GaugeRange>[
           GaugeRange(
               startValue: 0,
-              endValue: 800,
+              endValue: 1000,
               color: Colors.green,
               startWidth: 10,
               endWidth: 10),
           GaugeRange(
-              startValue: 800,
-              endValue: 1500,
+              startValue: 1000,
+              endValue: 2000,
               color: Colors.orange,
               startWidth: 10,
               endWidth: 10),
           GaugeRange(
-              startValue: 1500,
+              startValue: 2000,
               endValue: 3000,
               color: Colors.red,
               startWidth: 10,

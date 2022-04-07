@@ -7,6 +7,8 @@ import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
+import '../widget/message_dialog.dart';
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title, ThingsboardAdapterClient? r})
       : super(key: key);
@@ -22,6 +24,7 @@ class MyHomePage extends StatefulWidget {
 /// the page shows the gauges with the sensor values
 /// shows also the rooms in a dropdownmenu
 class MyHomePageState extends State<MyHomePage> {
+  bool warningmessage = false;
   final SettStringValue? _v = SettStringValue(null);
   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 
@@ -109,6 +112,12 @@ class MyHomePageState extends State<MyHomePage> {
             _humvalue = _c.lastHum.getvalue();
             _tempvalue = _c.lastTemp.getvalue();
           });
+          if (_co2value >= 1000 && !warningmessage) {
+            warningmessage = true;
+            showMessageDialog(context, _co2value, () {
+              warningmessage = false;
+            });
+          }
         },
         onError: (error, t) => debugPrint("An error happend!"),
         onDone: () {
