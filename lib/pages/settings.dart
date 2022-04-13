@@ -41,7 +41,7 @@ class SettingsState extends State<Settings> {
                   initialValue: _c.sa.getElementwithkey("IPAddress"),
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "IP Addresse von Thingsboard",
+                    labelText: "ip address of Thingsboard",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                         color:

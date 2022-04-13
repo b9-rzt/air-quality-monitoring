@@ -5,6 +5,7 @@ import 'package:myapp/value/value_classes.dart';
 import 'package:myapp/widget/lin_gauge.dart';
 import 'package:myapp/widget/navigation_drawer_widget.dart';
 import 'package:myapp/widget/rad_gauge.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 import '../widget/message_dialog.dart';
@@ -29,7 +30,7 @@ class MyHomePageState extends State<MyHomePage> {
   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 
   /// List for the selectable rooms/ devices
-  final Roomlist _list = Roomlist(['Wählen Sie den Raum aus!']);
+  final Roomlist _list = Roomlist(['Choose the Room!']);
 
   /// Subscription
   late StreamSubscription _substream;
@@ -72,9 +73,53 @@ class MyHomePageState extends State<MyHomePage> {
             dropdown(_v, _list),
             const Align(alignment: Alignment.topCenter),
             getRadialGauge(_co2value),
-            getLinearGauge(_humvalue, "Humidity: $_humvalue%"),
+            getLinearGauge(
+              _humvalue,
+              "Humidity: $_humvalue%",
+              0.0,
+              100.0,
+              <LinearGaugeRange>[
+                LinearGaugeRange(
+                  startValue: 0,
+                  endValue: 100, //40
+                  startWidth: 10,
+                  endWidth: 10,
+                  shaderCallback: (bounds) => const RadialGradient(
+                      center: Alignment.topLeft,
+                      radius: 35,
+                      colors: [
+                        Color.fromARGB(255, 207, 204, 11),
+                        Color.fromARGB(255, 207, 204, 11),
+                        Color.fromARGB(255, 0, 183, 255),
+                        Color.fromARGB(255, 12, 34, 233),
+                        Color.fromARGB(255, 12, 34, 233),
+                      ]).createShader(bounds),
+                ),
+              ],
+            ),
             const SizedBox(width: 10),
-            getLinearGauge(_tempvalue, "Temperature: $_tempvalue°C"),
+            getLinearGauge(
+              _tempvalue,
+              "Temperature: $_tempvalue°C",
+              0.0,
+              50.0,
+              <LinearGaugeRange>[
+                LinearGaugeRange(
+                  startValue: 0,
+                  endValue: 100, //40
+                  startWidth: 10,
+                  endWidth: 10,
+                  shaderCallback: (bounds) => const RadialGradient(
+                      center: Alignment.topLeft,
+                      radius: 35,
+                      colors: [
+                        Color.fromARGB(255, 16, 50, 161),
+                        Color.fromARGB(255, 255, 230, 0),
+                        Colors.red,
+                      ]).createShader(bounds),
+                ),
+              ],
+            ),
           ],
           crossAxisAlignment: CrossAxisAlignment.center,
         )));
@@ -86,7 +131,7 @@ class MyHomePageState extends State<MyHomePage> {
     _devices = await _c.getDevices();
     if (_devices != null) {
       setState(() {
-        _v?.value = 'Wählen Sie den Raum aus!';
+        _v?.value = 'Choose the Room!';
         for (var i = 0; i < _devices![0].length; i++) {
           _list.raum.add(_devices![0][i]);
         }

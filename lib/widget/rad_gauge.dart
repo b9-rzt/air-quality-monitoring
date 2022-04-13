@@ -8,7 +8,7 @@ Widget getRadialGauge(var co2Value) {
   return SfRadialGauge(
       enableLoadingAnimation: true,
       title: const GaugeTitle(
-          text: 'Co2-Value',
+          text: 'CO2-Value',
           textStyle: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
       axes: <RadialAxis>[
         RadialAxis(minimum: 0, maximum: 3000, ranges: <GaugeRange>[

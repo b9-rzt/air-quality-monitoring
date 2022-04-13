@@ -2,7 +2,7 @@
     package="com.example.myapp">
     <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="myapp"
+        android:label="Thingsboard Values"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
