@@ -23,7 +23,7 @@ class SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Settings'),
+          title: const Text('Einstellungen'),
           backgroundColor: const Color.fromRGBO(50, 75, 225, 1),
         ),
         body: SingleChildScrollView(
@@ -41,7 +41,7 @@ class SettingsState extends State<Settings> {
                   initialValue: _c.sa.getElementwithkey("IPAddress"),
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: "ip address of Thingsboard",
+                    labelText: "IP Addresse von Thingsboard",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                         color:
@@ -73,7 +73,7 @@ class SettingsState extends State<Settings> {
                   initialValue: _c.sa.getElementwithkey("Username"),
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: "Username",
+                    labelText: "Benutzername",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                         color:
@@ -106,7 +106,7 @@ class SettingsState extends State<Settings> {
                   obscureText: _hidePassword,
                   initialValue: _c.sa.getElementwithkey("Password"),
                   decoration: InputDecoration(
-                    labelText: "Password",
+                    labelText: "Passwort",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                         color:

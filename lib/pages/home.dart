@@ -30,7 +30,7 @@ class MyHomePageState extends State<MyHomePage> {
   final ThingsboardAdapterClient _c = ThingsboardAdapterClient();
 
   /// List for the selectable rooms/ devices
-  final Roomlist _list = Roomlist(['Choose the Room!']);
+  final Roomlist _list = Roomlist(['Wählen Sie den Raum aus!']);
 
   /// Subscription
   late StreamSubscription _substream;
@@ -75,7 +75,7 @@ class MyHomePageState extends State<MyHomePage> {
             getRadialGauge(_co2value),
             getLinearGauge(
               _humvalue,
-              "Humidity: $_humvalue%",
+              "Luftfeuchtigkeit: $_humvalue%",
               0.0,
               100.0,
               <LinearGaugeRange>[
@@ -100,7 +100,7 @@ class MyHomePageState extends State<MyHomePage> {
             const SizedBox(width: 10),
             getLinearGauge(
               _tempvalue,
-              "Temperature: $_tempvalue°C",
+              "Temperatur: $_tempvalue°C",
               0.0,
               50.0,
               <LinearGaugeRange>[
@@ -131,7 +131,7 @@ class MyHomePageState extends State<MyHomePage> {
     _devices = await _c.getDevices();
     if (_devices != null) {
       setState(() {
-        _v?.value = 'Choose the Room!';
+        _v?.value = 'Wählen Sie den Raum aus!';
         for (var i = 0; i < _devices![0].length; i++) {
           _list.raum.add(_devices![0][i]);
         }

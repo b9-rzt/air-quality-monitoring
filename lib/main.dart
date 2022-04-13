@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Thingsboard Values'),
+      home: const MyHomePage(title: 'Thingsboard Sensor Daten'),
     );
   }
 }

@@ -20,7 +20,7 @@ class NavigationDrawerWidget extends StatelessWidget {
         children: <Widget>[
           const SizedBox(height: 10),
           buildMenuItem(
-            text: 'Settings',
+            text: 'Einstellungen',
             icon: Icons.settings,
             onClicked: () {
               Navigator.pop(context);

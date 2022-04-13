@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/Backend/thingsboard_adapter_client.dart';
-import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// error dialog
 Future<void> showMessageDialog(
